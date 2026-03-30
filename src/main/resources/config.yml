@@ -1,0 +1,55 @@
+settings:
+  # регион
+  region: "farmer_zone"
+  # время до восстановления пшеницы (в секундах)
+  restoreDelay: 20
+  # звук при сборе
+  sound:
+    type: "ENTITY_ITEM_PICKUP"
+    volume: 1.0
+    pitch: 1.2
+
+# настройка групп
+groups:
+  default:
+    permission: ""
+    price: 1.5
+    capacity: 64
+  vip:
+    permission: "mfarmer.vip"
+    price: 2.5
+    capacity: 128
+  premium:
+    permission: "mfarmer.premium"
+    price: 4.0
+    capacity: 256
+
+# сообщения
+messages:
+  collect: "&#74E38E&lФЕРМА &8| &fСобрано: &#74E38E{amount}&7/&#74E38E{capacity}"
+  backpack_full: "&#E37474&lОШИБКА &8| &cРюкзак полон! Используйте &f/mfarmer salary"
+
+  salary_success: "&#74E38E&lУСПЕХ &8| &fВы сдали урожай и получили &#74E38E{money}$"
+  salary_fail: "&#E37474&lОШИБКА &8| &cУ вас нет урожая в рюкзаке!"
+
+  upgrade_success: "&#74E38E&lАПГРЕЙД &8| &fВместимость увеличена! Текущий бонус: &#74E38E+{bonus}"
+  upgrade_no_money: "&#E37474&lДЕНЬГИ &8| &cНедостаточно средств! Нужно: &#74E38E{price}$"
+
+  boost_start_broadcast: "&#D674E3&lБУСТ &8| &fАктивирован глобальный множитель &#D674E3x{multiplier} &fна &e{minutes} мин.!"
+  personal_boost_received: "&#D674E3&lБУСТ &8| &fВам активирован личный множитель &#D674E3x{multiplier} &fна &e{minutes} мин.!"
+  boost_active_msg: "&#D674E3&lБУСТ &8| &fВ данный момент действует множитель: &#D674E3x{multiplier}"
+
+  help_player:
+    - "&d&lФермер &7- Помощь"
+    - "&f/mfarmer salary &7- Сдать урожай"
+    - "&f/mfarmer upgrade &7- Улучшить вместимость"
+
+  help_admin:
+    - "&c/mfarmer giveboost <player> <x> <min> &7- Выдать личный буст"
+    - "&c/mfarmer stopboost [player] &7- Остановить буст (глоб./личный)"
+    - "&c/mfarmer adminboost <x> <min> &7- Глобальный буст"
+    - "&c/mfarmer reload &7- Перезагрузка"
+
+  reloaded: "&#74E38E&lСИСТЕМА &8| &fКонфигурация перезагружена!"
+  no_permission: "&#E37474&lПРАВА &8| &cУ вас нет прав на это действие."
+  unknown_command: "&#E37474&lОШИБКА &8| &cНеизвестная подкоманда. Используйте &f/mfarmer help"
