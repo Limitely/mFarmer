@@ -23,7 +23,7 @@ public class Expansion extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getAuthor() {
-        return "LimitFlow";
+        return "Limitely";
     }
 
     @Override

@@ -18,7 +18,7 @@ public class ConfigCache {
     private final Map<String, List<String>> messageLists = new HashMap<>();
 
     private long restoreDelay = 20L;
-    private String region = "farmer_zone";
+    private List<String> regions = new ArrayList<>();
     private String soundType = "ENTITY_ITEM_PICKUP";
     private float soundVolume = 1f;
     private float soundPitch = 1f;
@@ -52,7 +52,15 @@ public class ConfigCache {
         }
 
         restoreDelay = config.getLong("settings.restoreDelay", 20L);
-        region = config.getString("settings.region", "farmer_zone");
+
+        if (config.isList("settings.regions")) {
+            regions = config.getStringList("settings.regions");
+        } else {
+            String single = config.getString("settings.region", "farmer_zone");
+            regions = new ArrayList<>();
+            regions.add(single);
+        }
+
         soundType = config.getString("settings.sound.type", "ENTITY_ITEM_PICKUP");
         soundVolume = (float) config.getDouble("settings.sound.volume", 1.0);
         soundPitch = (float) config.getDouble("settings.sound.pitch", 1.0);
@@ -70,8 +78,8 @@ public class ConfigCache {
         return restoreDelay;
     }
 
-    public String getRegion() {
-        return region;
+    public List<String> getRegions() {
+        return regions;
     }
 
     public String getSoundType() {

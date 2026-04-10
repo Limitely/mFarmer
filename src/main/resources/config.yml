@@ -1,6 +1,7 @@
 settings:
-  # регион
-  region: "farmer_zone"
+  # регионы (можно указать несколько)
+  regions:
+    - "farmer_zone"
   # время до восстановления пшеницы (в секундах)
   restoreDelay: 20
   # звук при сборе
@@ -43,6 +44,7 @@ messages:
     - "&d&lФермер &7- Помощь"
     - "&f/mfarmer salary &7- Сдать урожай"
     - "&f/mfarmer upgrade &7- Улучшить вместимость"
+    - "&f/mfarmer top &7- Топ фермеров"
 
   help_admin:
     - "&c/mfarmer giveboost <player> <x> <min> &7- Выдать личный буст"

@@ -5,7 +5,9 @@ import org.bukkit.Bukkit;
 
 import java.io.File;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -31,8 +33,10 @@ public class Database {
 
     private void createTables() {
         try (Statement s = connection.createStatement()) {
-            s.execute("CREATE TABLE IF NOT EXISTS backpack_stats (uuid TEXT PRIMARY KEY, extra_slots INTEGER)");
+            s.execute("CREATE TABLE IF NOT EXISTS backpack_stats (uuid TEXT PRIMARY KEY, extra_slots INTEGER, total_earned REAL DEFAULT 0)");
             s.execute("CREATE TABLE IF NOT EXISTS local_boosts (uuid TEXT PRIMARY KEY, multiplier REAL, end_time LONG)");
+            // миграция: добавить колонку если таблица уже существовала без неё
+            try { s.execute("ALTER TABLE backpack_stats ADD COLUMN total_earned REAL DEFAULT 0"); } catch (SQLException ignored) {}
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -110,6 +114,57 @@ public class Database {
             e.printStackTrace();
         }
         return boosts;
+    }
+
+    public void addEarned(UUID uuid, double amount) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO backpack_stats (uuid, extra_slots, total_earned) VALUES (?, 0, ?) " +
+                    "ON CONFLICT(uuid) DO UPDATE SET total_earned = total_earned + excluded.total_earned")) {
+                ps.setString(1, uuid.toString());
+                ps.setDouble(2, amount);
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                plugin.getLogger().severe("Ошибка addEarned: " + e.getMessage());
+            }
+        });
+    }
+
+    public List<double[]> getTop(int limit) {
+        List<double[]> result = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT uuid, total_earned FROM backpack_stats ORDER BY total_earned DESC LIMIT ?")) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    long mostSig = UUID.fromString(rs.getString("uuid")).getMostSignificantBits();
+                    long leastSig = UUID.fromString(rs.getString("uuid")).getLeastSignificantBits();
+                    result.add(new double[]{Double.longBitsToDouble(mostSig), Double.longBitsToDouble(leastSig), rs.getDouble("total_earned")});
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public List<Object[]> getTopEntries(int limit) {
+        List<Object[]> result = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT uuid, total_earned FROM backpack_stats ORDER BY total_earned DESC LIMIT ?")) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    result.add(new Object[]{
+                        UUID.fromString(rs.getString("uuid")),
+                        rs.getDouble("total_earned")
+                    });
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     public void close() {

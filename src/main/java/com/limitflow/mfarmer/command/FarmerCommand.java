@@ -10,6 +10,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+import java.util.UUID;
+
 import java.util.UUID;
 
 public class FarmerCommand implements CommandExecutor {
@@ -43,6 +46,7 @@ public class FarmerCommand implements CommandExecutor {
         switch (args[0].toLowerCase()) {
             case "salary"  -> handleSalary(player);
             case "upgrade" -> handleUpgrade(player);
+            case "top"     -> handleTop(player);
             case "reload"  -> handleReload(player);
             default -> player.sendMessage(plugin.getConfigCache().getMessage("unknown_command", "&cНеизвестная подкоманда."));
         }
@@ -69,6 +73,7 @@ public class FarmerCommand implements CommandExecutor {
         double total = group.price() * amount * multiplier;
 
         plugin.getEconomyManager().deposit(player, total);
+        plugin.getDatabase().addEarned(uuid, total);
         plugin.getBackpackManager().clear(uuid);
 
         player.sendMessage(plugin.getConfigCache().getMessage("salary_success")
@@ -162,6 +167,35 @@ public class FarmerCommand implements CommandExecutor {
 
         plugin.getBoostManager().stopLocalBoost(target.getUniqueId());
         sender.sendMessage(Message.color("&aЛичный буст игрока " + target.getName() + " аннулирован."));
+    }
+
+    private void handleTop(Player player) {
+        player.sendMessage(Message.color("&#74E38E&lТОП ФЕРМЕРОВ &8| &7Загрузка..."));
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            List<Object[]> entries = plugin.getDatabase().getTopEntries(10);
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (entries.isEmpty()) {
+                    player.sendMessage(Message.color("&cПока нет данных."));
+                    return;
+                }
+                player.sendMessage(Message.color("&#74E38E&l        ТОП ФЕРМЕРОВ        "));
+                for (int i = 0; i < entries.size(); i++) {
+                    UUID uuid = (UUID) entries.get(i)[0];
+                    double earned = (double) entries.get(i)[1];
+                    String name = Bukkit.getOfflinePlayer(uuid).getName();
+                    if (name == null) name = "Неизвестный";
+                    String medal = switch (i) {
+                        case 0 -> "&#FFD700&l#1";
+                        case 1 -> "&#C0C0C0&l#2";
+                        case 2 -> "&#CD7F32&l#3";
+                        default -> "&7#" + (i + 1);
+                    };
+                    player.sendMessage(Message.color(
+                        medal + " &f" + name + " &8| &f" + String.format("%.2f", earned) + "$"
+                    ));
+                }
+            });
+        });
     }
 
     private void handleReload(CommandSender sender) {

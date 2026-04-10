@@ -10,6 +10,7 @@ import com.limitflow.mfarmer.group.GroupManager;
 import com.limitflow.mfarmer.listener.BreakBlock;
 import com.limitflow.mfarmer.utils.Expansion;
 import com.limitflow.mfarmer.utils.Region;
+import com.limitflow.mfarmer.utils.Update;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -40,6 +41,7 @@ public class MFarmer extends JavaPlugin {
         this.economyManager = new Economic(this);
 
         loadPluginConfig();
+        new Update(this).check();
 
         this.backpackManager = new BackpackManager(this);
         this.boostManager = new BoostManager(this);

@@ -5,6 +5,8 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 public class Region {
 
     private static RegionQuery query;
@@ -13,10 +15,12 @@ public class Region {
         query = WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery();
     }
 
-    public static boolean isInRegion(Player player, String regionName) {
+    public static boolean isInRegion(Player player, List<String> regionNames) {
         if (query == null) return false;
         for (var region : query.getApplicableRegions(BukkitAdapter.adapt(player.getLocation()))) {
-            if (region.getId().equalsIgnoreCase(regionName)) return true;
+            for (String name : regionNames) {
+                if (region.getId().equalsIgnoreCase(name)) return true;
+            }
         }
         return false;
     }

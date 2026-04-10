@@ -48,7 +48,7 @@ public class BreakBlock implements Listener {
 
         Player player = event.getPlayer();
 
-        if (!Region.isInRegion(player, plugin.getConfigCache().getRegion())) return;
+        if (!Region.isInRegion(player, plugin.getConfigCache().getRegions())) return;
 
         event.setCancelled(true);
 
