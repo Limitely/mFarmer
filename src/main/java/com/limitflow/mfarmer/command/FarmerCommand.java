@@ -13,8 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.UUID;
 
-import java.util.UUID;
-
 public class FarmerCommand implements CommandExecutor {
 
     private final MFarmer plugin;
@@ -170,28 +168,29 @@ public class FarmerCommand implements CommandExecutor {
     }
 
     private void handleTop(Player player) {
-        player.sendMessage(Message.color("&#74E38E&lТОП ФЕРМЕРОВ &8| &7Загрузка..."));
+        player.sendMessage(plugin.getConfigCache().getMessage("top_loading"));
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             List<Object[]> entries = plugin.getDatabase().getTopEntries(10);
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (entries.isEmpty()) {
-                    player.sendMessage(Message.color("&cПока нет данных."));
+                    player.sendMessage(plugin.getConfigCache().getMessage("top_empty"));
                     return;
                 }
-                player.sendMessage(Message.color("&#74E38E&l        ТОП ФЕРМЕРОВ        "));
+                player.sendMessage(plugin.getConfigCache().getMessage("top_header"));
                 for (int i = 0; i < entries.size(); i++) {
                     UUID uuid = (UUID) entries.get(i)[0];
                     double earned = (double) entries.get(i)[1];
                     String name = Bukkit.getOfflinePlayer(uuid).getName();
-                    if (name == null) name = "Неизвестный";
+                    if (name == null) name = plugin.getConfigCache().getMessage("top_unknown");
                     String medal = switch (i) {
-                        case 0 -> "&#FFD700&l#1";
-                        case 1 -> "&#C0C0C0&l#2";
-                        case 2 -> "&#CD7F32&l#3";
-                        default -> "&7#" + (i + 1);
+                        case 0 -> plugin.getConfigCache().getMessage("top_medal_1");
+                        case 1 -> plugin.getConfigCache().getMessage("top_medal_2");
+                        case 2 -> plugin.getConfigCache().getMessage("top_medal_3");
+                        default -> plugin.getConfigCache().getMessage("top_medal_other")
+                                .replace("{pos}", String.valueOf(i + 1));
                     };
                     player.sendMessage(Message.color(
-                        medal + " &f" + name + " &8| &f" + String.format("%.2f", earned) + "$"
+                            medal + " &f" + name + " &8| &f" + String.format("%.2f", earned) + "$"
                     ));
                 }
             });

@@ -52,6 +52,15 @@ messages:
     - "&c/mfarmer adminboost <x> <min> &7- Глобальный буст"
     - "&c/mfarmer reload &7- Перезагрузка"
 
+  top_loading: "&#74E38EЗагрузка..."
+  top_header: "&#74E38E&l        ТОП ФЕРМЕРОВ        "
+  top_empty: "&cПока нет данных."
+  top_unknown: "Неизвестный"
+  top_medal_1: "&#FFD700&l#1"
+  top_medal_2: "&#C0C0C0&l#2"
+  top_medal_3: "&#CD7F32&l#3"
+  top_medal_other: "&7#{pos}"
+
   reloaded: "&#74E38E&lСИСТЕМА &8| &fКонфигурация перезагружена!"
   no_permission: "&#E37474&lПРАВА &8| &cУ вас нет прав на это действие."
   unknown_command: "&#E37474&lОШИБКА &8| &cНеизвестная подкоманда. Используйте &f/mfarmer help"
