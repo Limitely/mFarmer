@@ -1,0 +1,28 @@
+menu:
+  title: "&#74E38E&lСтатистика"
+  size: 27
+  items:
+    stats:
+      slot: 13
+      material: PLAYER_HEAD
+      name: "&#74E38E&lВАША СТАТИСТИКА"
+      lore:
+        - "&8&m--------------------------"
+        - "&f Игрок: &#74E38E%mfarmer_name%"
+        - "&f В рюкзаке: &#74E38E%mfarmer_amount% шт."
+        - ""
+        - "&#D674E3&lАКТИВНЫЕ МНОЖИТЕЛИ:"
+        - " &#D674E3• &fТекущий бонус: &#D674E3%mfarmer_multiplier%"
+        - " &#D674E3• &fЛичный буст: &7%mfarmer_local_boost_time%"
+        - " &#D674E3• &fГлобальный буст: &7%mfarmer_boost_time%"
+        - "&8&m--------------------------"
+
+    top:
+      slot: 22
+      material: GOLD_INGOT
+      name: "&#FFD966&lТОП ФЕРМЕРОВ"
+      lore:
+        - "&8&m--------------------------"
+        - "&fПосмотреть лучших игроков"
+        - "&8&m--------------------------"
+      action: "top"

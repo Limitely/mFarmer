@@ -38,27 +38,35 @@ public class Expansion extends PlaceholderExpansion {
 
     @Override
     public String onPlaceholderRequest(Player player, @NotNull String params) {
+
         if (player == null) return "";
 
         UUID uuid = player.getUniqueId();
+
         int amount = plugin.getBackpackManager().getAmount(uuid);
         int bonusSlots = plugin.getBackpackManager().getExtraCapacity(uuid);
+
         GroupData group = plugin.getGroupManager().getGroup(player);
 
         double basePrice = (group != null) ? group.price() : 0.0;
         int capacity = (group != null) ? (group.capacity() + bonusSlots) : bonusSlots;
+
         double currentMultiplier = plugin.getBoostManager().getMultiplier(uuid);
 
         return switch (params.toLowerCase()) {
-            case "amount"          -> String.valueOf(amount);
-            case "capacity"        -> String.valueOf(capacity);
-            case "bonus_slots"     -> String.valueOf(bonusSlots);
-            case "price"           -> String.format("%.2f", basePrice * currentMultiplier);
-            case "multiplier"      -> String.format("%.1fx", currentMultiplier);
-            case "boost_time"      -> plugin.getBoostManager().getGlobalRemainingTime();
-            case "local_boost_time"-> plugin.getBoostManager().getLocalRemainingTime(uuid);
-            case "salary"          -> String.format("%.2f", (double) amount * basePrice * currentMultiplier);
-            default                -> null;
+
+            case "amount" -> String.valueOf(amount);
+            case "capacity" -> String.valueOf(capacity);
+            case "bonus_slots" -> String.valueOf(bonusSlots);
+            case "price" -> String.format("%.2f", basePrice * currentMultiplier);
+            case "multiplier" -> String.format("%.1fx", currentMultiplier);
+            case "boost_time" -> plugin.getBoostManager().getGlobalRemainingTime();
+            case "local_boost_time" -> plugin.getBoostManager().getLocalRemainingTime(uuid);
+            case "salary" -> String.format("%.2f", (double) amount * basePrice * currentMultiplier);
+            case "name" -> player.getName();
+            case "level" -> String.valueOf(player.getLevel());
+
+            default -> null;
         };
     }
 }
