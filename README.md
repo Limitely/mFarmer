@@ -1,4 +1,4 @@
-MFarmer - фермерство [![CodeFactor](https://www.codefactor.io/repository/github/limitely/mfarmer/badge)](https://www.codefactor.io/repository/github/limitely/mfarmer)
+MFarmer - фермерство  [![CodeFactor](https://www.codefactor.io/repository/github/limitely/mfarmer/badge)](https://www.codefactor.io/repository/github/limitely/mfarmer)
 
 Плагин добавляет на сервер систему заработка через фермерство.
 Игроки собирают пшеницу, которая автоматически отправляется в виртуальный рюкзак.
