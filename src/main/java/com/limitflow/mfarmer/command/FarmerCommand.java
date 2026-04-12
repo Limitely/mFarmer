@@ -44,7 +44,8 @@ public class FarmerCommand implements CommandExecutor {
 
             case "menu" -> {
                 if (sender instanceof Player player) {
-                    plugin.getMenu().openMenu(player);
+                    String menuId = args.length >= 2 ? args[1] : plugin.getMenu().getDefaultMenuId();
+                    plugin.getMenu().openMenu(player, menuId);
                 } else {
                     sender.sendMessage("Только игроки могут использовать основные команды.");
                 }

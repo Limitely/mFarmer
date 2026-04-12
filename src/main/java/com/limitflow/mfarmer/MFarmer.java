@@ -13,6 +13,7 @@ import com.limitflow.mfarmer.menu.MenuListener;
 import com.limitflow.mfarmer.utils.Expansion;
 import com.limitflow.mfarmer.utils.Region;
 import com.limitflow.mfarmer.utils.Update;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -78,6 +79,9 @@ public class MFarmer extends JavaPlugin {
         getLogger().info("MFarmer v" + getDescription().getVersion() + " запущен!");
         getLogger().info("База данных загрузилась.");
         getLogger().info("===================================");
+
+        int pluginId = 27687;
+        new Metrics(this, pluginId);
     }
 
     @Override

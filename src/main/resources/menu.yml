@@ -1,28 +1,71 @@
-menu:
-  title: "&#74E38E&lСтатистика"
-  size: 27
-  items:
-    stats:
-      slot: 13
-      material: PLAYER_HEAD
-      name: "&#74E38E&lВАША СТАТИСТИКА"
-      lore:
-        - "&8&m--------------------------"
-        - "&f Игрок: &#74E38E%mfarmer_name%"
-        - "&f В рюкзаке: &#74E38E%mfarmer_amount% шт."
-        - ""
-        - "&#D674E3&lАКТИВНЫЕ МНОЖИТЕЛИ:"
-        - " &#D674E3• &fТекущий бонус: &#D674E3%mfarmer_multiplier%"
-        - " &#D674E3• &fЛичный буст: &7%mfarmer_local_boost_time%"
-        - " &#D674E3• &fГлобальный буст: &7%mfarmer_boost_time%"
-        - "&8&m--------------------------"
+#
+#  Меню — Как и что настраивается
+#
+#
+#  каждое меню это типо отдельная штука в menus:
+#  вот как примерно делать:
+#
+#  menus:
+#    МОЁ_МЕНЮ:                     - ну типо айди сам придумываешь
+#      title: "Название инвентаря" - это сверху как называется
+#      size: 27                    - размер
+#      command: "моякоманда"       - пишешь /моякоманда и откроется (не обязательно)
+#      items:
+#        МОЙ_ПРЕДМЕТ:              - тоже сам название даёшь
+#          slot: 13                - слот (0 это самый левый сверху)
+#          material: STONE         - какой предмет будет
+#          name: "&aНазвание"      - как будет называться
+#          lore:                   - описание (можно не писать)
+#            - "&7тут чо угодно"
+#            - "&7mFarmer :)"
+#          action: "..."           - что будет при нажатии (не обязательно)
+#
+#
+#  MATERIAL — Что писать
+#
+#
+#  material: GOLD_INGOT            - обычный предмет
+#  material: PLAYER_HEAD           - голова игрока
+#  material: "HEAD:eyJ0..."        - кастом голова (берёшь с сайта)
+#
+#
+#  ACTION — Что будет при нажатии
+#
+#
+#  action: "top"                   - типо открывает топ
+#  action: "cmd:say mfarmer v 1.3.3 by Limitely"        - игрок сам пишет команду
+#  action: "console:give {player} dirt" - от консоли выполняется
+#  action: "menu:name"             - откроет другое меню
+#
+menus:
+  stats:
+    title: "&#74E38E&lСтатистика"
+    size: 27
+    command: "farmer"
 
-    top:
-      slot: 22
-      material: GOLD_INGOT
-      name: "&#FFD966&lТОП ФЕРМЕРОВ"
-      lore:
-        - "&8&m--------------------------"
-        - "&fПосмотреть лучших игроков"
-        - "&8&m--------------------------"
-      action: "top"
+    items:
+
+      player_head:
+        slot: 13
+        material: "HEAD:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjE0NTNlNTQ0OTlkNWE1YzE1M2E0MjQ0ZDBmYzk1MWY4MWZjOTc1ZjcwYmRhNjhmODExYjVkNWZmNDBhOTQ3In19fQ=="
+        name: "&#74E38E&lВАША СТАТИСТИКА"
+        lore:
+          - "&8&m--------------------------"
+          - "&f Игрок: &#74E38E%mfarmer_name%"
+          - "&f В рюкзаке: &#74E38E%mfarmer_amount% шт."
+          - ""
+          - "&#D674E3&lАКТИВНЫЕ МНОЖИТЕЛИ:"
+          - " &#D674E3• &fТекущий бонус: &#D674E3%mfarmer_multiplier%"
+          - " &#D674E3• &fЛичный буст: &7%mfarmer_local_boost_time%"
+          - " &#D674E3• &fГлобальный буст: &7%mfarmer_boost_time%"
+          - "&8&m--------------------------"
+
+      top:
+        slot: 11
+        material: GOLD_INGOT
+        name: "&#FFD966&lТОП ФЕРМЕРОВ"
+        lore:
+          - "&8&m--------------------------"
+          - "&fПосмотреть лучших игроков"
+          - "&8&m--------------------------"
+        action: "top"

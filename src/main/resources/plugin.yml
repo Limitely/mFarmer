@@ -1,5 +1,5 @@
 name: mFarmer
-version: '1.3.2'
+version: '1.3.3'
 main: com.limitflow.mfarmer.MFarmer
 api-version: '1.16'
 depend: [WorldGuard, Vault]
@@ -8,7 +8,7 @@ author: Limitely
 
 commands:
   mfarmer:
-    usage: /mfarmer <help|salary|upgrade|top|reload|adminboost|giveboost|menu>
+    usage: /mfarmer <help|salary|upgrade|top|reload|adminboost|giveboost|menu [id]>
     aliases: [farmer, farm]
 
 permissions:
