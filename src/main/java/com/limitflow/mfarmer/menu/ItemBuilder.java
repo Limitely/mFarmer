@@ -72,6 +72,7 @@ public class ItemBuilder {
             profileField.set(skullMeta, profile);
 
         } catch (Exception e) {
+            java.util.logging.Logger.getLogger("mFarmer").warning("Неудачно применилась текстура " + e.getMessage());
         }
 
         return this;

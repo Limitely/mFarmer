@@ -92,7 +92,7 @@ public class Menu {
             registeredCommands.add(commandName);
 
         } catch (Exception e) {
-            plugin.getLogger().warning("Не зарегистрировалась команла /" + commandName + ": " + e.getMessage());
+            plugin.getLogger().warning("Не удалось зарегистрировать команду /" + commandName + ": " + e.getMessage());
         }
     }
 
@@ -114,13 +114,22 @@ public class Menu {
         actions.clear();
 
         var menusSection = config.getConfigurationSection("menus");
-        if (menusSection == null) { player.openInventory(inv); return; }
+        if (menusSection == null) {
+            player.openInventory(inv);
+            return;
+        }
 
         var menuSection = menusSection.getConfigurationSection(menuId);
-        if (menuSection == null) { player.openInventory(inv); return; }
+        if (menuSection == null) {
+            player.openInventory(inv);
+            return;
+        }
 
         var items = menuSection.getConfigurationSection("items");
-        if (items == null) { player.openInventory(inv); return; }
+        if (items == null) {
+            player.openInventory(inv);
+            return;
+        }
 
         for (String key : items.getKeys(false)) {
             var itemSec = items.getConfigurationSection(key);
@@ -158,7 +167,11 @@ public class Menu {
                     .build();
         }
         Material material;
-        try { material = Material.valueOf(materialStr); } catch (Exception e) { material = Material.STONE; }
+        try {
+            material = Material.valueOf(materialStr);
+        } catch (Exception e) {
+            material = Material.STONE;
+        }
         return new ItemBuilder(material)
                 .name(apply(player, name))
                 .lore(lore.stream().map(l -> apply(player, l)).toList())
