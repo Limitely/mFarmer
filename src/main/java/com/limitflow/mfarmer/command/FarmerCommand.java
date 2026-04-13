@@ -265,10 +265,18 @@ public class FarmerCommand implements CommandExecutor, TabCompleter {
     }
 
     private Double parseDouble(String s) {
-        try { return Double.parseDouble(s); } catch (Exception e) { return null; }
+        try {
+            return Double.parseDouble(s);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private Integer parseInt(String s) {
-        try { return Integer.parseInt(s); } catch (Exception e) { return null; }
+        try {
+            return Integer.parseInt(s);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
