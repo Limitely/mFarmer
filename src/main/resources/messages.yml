@@ -1,0 +1,41 @@
+# Настройка сообщений (вынес в отдельный файл чтобы в основном была только настройка)
+
+messages:
+  collect: "&#74E38E&lФЕРМА &8| &fСобрано ({crop}): &#74E38E{amount}&7/&#74E38E{capacity}"
+  backpack_full: "&#E37474&lОШИБКА &8| &cРюкзак полон! Используйте &f/mfarmer salary"
+
+  salary_success: "&#74E38E&lУСПЕХ &8| &fВы сдали урожай и получили &#74E38E{money}$"
+  salary_fail: "&#E37474&lОШИБКА &8| &cУ вас нет урожая в рюкзаке!"
+
+  upgrade_success: "&#74E38E&lАПГРЕЙД &8| &fВместимость увеличена! Текущий бонус: &#74E38E+{bonus}"
+  upgrade_no_money: "&#E37474&lДЕНЬГИ &8| &cНедостаточно средств! Нужно: &#74E38E{price}$"
+  upgrade_max_reached: "&#E37474&lАПГРЕЙД &8| &cВы уже достигли максимального размера рюкзака!"
+
+  boost_start_broadcast: "&#D674E3&lБУСТ &8| &fАктивирован глобальный множитель &#D674E3x{multiplier} &fна &e{minutes} мин.!"
+  personal_boost_received: "&#D674E3&lБУСТ &8| &fВам активирован личный множитель &#D674E3x{multiplier} &fна &e{minutes} мин.!"
+  boost_active_msg: "&#D674E3&lБУСТ &8| &fВ данный момент действует множитель: &#D674E3x{multiplier}"
+
+  help_player:
+    - "&d&lФермер &7- Помощь"
+    - "&f/mfarmer salary &7- Сдать урожай"
+    - "&f/mfarmer upgrade &7- Улучшить вместимость"
+    - "&f/mfarmer top &7- Топ фермеров"
+
+  help_admin:
+    - "&c/mfarmer giveboost <игрок> <x> <мин> &7- Личный буст"
+    - "&c/mfarmer stopboost [игрок] &7- Остановить буст"
+    - "&c/mfarmer adminboost <x> <мин> &7- Глобальный буст"
+    - "&c/mfarmer reload &7- Перезагрузка"
+
+  top_loading: "&#74E38EЗагрузка..."
+  top_header: "&#74E38E&l        ТОП ФЕРМЕРОВ        "
+  top_empty: "&cПока нет данных."
+  top_unknown: "Неизвестный"
+  top_medal_1: "&#FFD700&l#1"
+  top_medal_2: "&#C0C0C0&l#2"
+  top_medal_3: "&#CD7F32&l#3"
+  top_medal_other: "&7#{pos}"
+
+  reloaded: "&#74E38E&lСИСТЕМА &8| &fКонфигурация перезагружена!"
+  no_permission: "&#E37474&lПРАВА &8| &cУ вас нет прав на это действие."
+  unknown_command: "&#E37474&lОШИБКА &8| &cНеизвестная подкоманда. Используйте &f/mfarmer help"

@@ -1,19 +1,27 @@
 package com.limitflow.mfarmer.backpack;
 
 import com.limitflow.mfarmer.MFarmer;
+import org.bukkit.Bukkit;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BackpackManager {
 
     private final MFarmer plugin;
-    private final Map<UUID, Integer> backpack = new HashMap<>();
-    private final Map<UUID, Integer> extraCapacityCache = new HashMap<>();
+    private final Map<UUID, Integer> backpack = new ConcurrentHashMap<>();
+    private final Map<UUID, Integer> extraCapacityCache = new ConcurrentHashMap<>();
 
     public BackpackManager(MFarmer plugin) {
         this.plugin = plugin;
+    }
+
+    public void preloadPlayer(UUID uuid) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            int slots = plugin.getDatabase().loadExtraSlots(uuid);
+            extraCapacityCache.put(uuid, slots);
+        });
     }
 
     public int getAmount(UUID uuid) {
@@ -21,7 +29,7 @@ public class BackpackManager {
     }
 
     public int getExtraCapacity(UUID uuid) {
-        return extraCapacityCache.computeIfAbsent(uuid, id -> plugin.getDatabase().loadExtraSlots(id));
+        return extraCapacityCache.getOrDefault(uuid, 0);
     }
 
     public void addExtraCapacity(UUID uuid, int amount) {

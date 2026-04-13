@@ -10,7 +10,7 @@ settings:
     volume: 1.0
     pitch: 1.2
 
-# настройка групп
+# настройка групп, цена умножается на priceMultiplier из категории crops
 groups:
   default:
     permission: ""
@@ -25,42 +25,32 @@ groups:
     price: 4.0
     capacity: 256
 
-# сообщения
-messages:
-  collect: "&#74E38E&lФЕРМА &8| &fСобрано: &#74E38E{amount}&7/&#74E38E{capacity}"
-  backpack_full: "&#E37474&lОШИБКА &8| &cРюкзак полон! Используйте &f/mfarmer salary"
+# культуры, поддерживаются только те что тут написаны
+crops:
+  wheat:
+    material: WHEAT
+    priceMultiplier: 1.0
+    displayName: "Пшеница"
+  carrots:
+    material: CARROTS
+    priceMultiplier: 1.2
+    displayName: "Морковь"
+  potatoes:
+    material: POTATOES
+    priceMultiplier: 1.1
+    displayName: "Картошка"
+  beetroots:
+    material: BEETROOTS
+    priceMultiplier: 0.9
+    displayName: "Свёкла"
 
-  salary_success: "&#74E38E&lУСПЕХ &8| &fВы сдали урожай и получили &#74E38E{money}$"
-  salary_fail: "&#E37474&lОШИБКА &8| &cУ вас нет урожая в рюкзаке!"
-
-  upgrade_success: "&#74E38E&lАПГРЕЙД &8| &fВместимость увеличена! Текущий бонус: &#74E38E+{bonus}"
-  upgrade_no_money: "&#E37474&lДЕНЬГИ &8| &cНедостаточно средств! Нужно: &#74E38E{price}$"
-
-  boost_start_broadcast: "&#D674E3&lБУСТ &8| &fАктивирован глобальный множитель &#D674E3x{multiplier} &fна &e{minutes} мин.!"
-  personal_boost_received: "&#D674E3&lБУСТ &8| &fВам активирован личный множитель &#D674E3x{multiplier} &fна &e{minutes} мин.!"
-  boost_active_msg: "&#D674E3&lБУСТ &8| &fВ данный момент действует множитель: &#D674E3x{multiplier}"
-
-  help_player:
-    - "&d&lФермер &7- Помощь"
-    - "&f/mfarmer salary &7- Сдать урожай"
-    - "&f/mfarmer upgrade &7- Улучшить вместимость"
-    - "&f/mfarmer top &7- Топ фермеров"
-
-  help_admin:
-    - "&c/mfarmer giveboost <player> <x> <min> &7- Выдать личный буст"
-    - "&c/mfarmer stopboost [player] &7- Остановить буст (глоб./личный)"
-    - "&c/mfarmer adminboost <x> <min> &7- Глобальный буст"
-    - "&c/mfarmer reload &7- Перезагрузка"
-
-  top_loading: "&#74E38EЗагрузка..."
-  top_header: "&#74E38E&l        ТОП ФЕРМЕРОВ        "
-  top_empty: "&cПока нет данных."
-  top_unknown: "Неизвестный"
-  top_medal_1: "&#FFD700&l#1"
-  top_medal_2: "&#C0C0C0&l#2"
-  top_medal_3: "&#CD7F32&l#3"
-  top_medal_other: "&7#{pos}"
-
-  reloaded: "&#74E38E&lСИСТЕМА &8| &fКонфигурация перезагружена!"
-  no_permission: "&#E37474&lПРАВА &8| &cУ вас нет прав на это действие."
-  unknown_command: "&#E37474&lОШИБКА &8| &cНеизвестная подкоманда. Используйте &f/mfarmer help"
+# настройки для апгрейда рюкзака
+upgrade:
+  # начальная стоимость первого апгрейда
+  baseCost: 1000.0
+  # доп.стоимость к последующим
+  costPerSlot: 10.0
+  # кол-во слотов за один апгрейд
+  slotsPerLevel: 10
+  # максимум дополнительных слотов (0 = без ограничения)
+  maxExtraCapacity: 0
