@@ -4,7 +4,7 @@
   <groupId>com.limitflow</groupId>
   <artifactId>mFarmer</artifactId>
   <name>mFarmer</name>
-  <version>1.3.3</version>
+  <version>1.3.4</version>
   <build>
     <resources>
       <resource>
