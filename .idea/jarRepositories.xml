@@ -2,6 +2,11 @@
 <project version="4">
   <component name="RemoteRepositoriesConfiguration">
     <remote-repository>
+      <option name="id" value="rosewood-repo" />
+      <option name="name" value="rosewood-repo" />
+      <option name="url" value="https://repo.rosewooddev.io/repository/public/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="central" />
       <option name="name" value="Central Repository" />
       <option name="url" value="https://repo.maven.apache.org/maven2" />
@@ -15,6 +20,11 @@
       <option name="id" value="sonatype" />
       <option name="name" value="sonatype" />
       <option name="url" value="https://oss.sonatype.org/content/groups/public/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="black-ixx-repo" />
+      <option name="name" value="black-ixx-repo" />
+      <option name="url" value="https://repo.black-ixx.com/releases" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="papermc-repo" />
@@ -45,6 +55,11 @@
       <option name="id" value="sk89q-repo" />
       <option name="name" value="sk89q-repo" />
       <option name="url" value="https://maven.enginehub.org/repo/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="rosewood-repo" />
+      <option name="name" value="rosewood-repo" />
+      <option name="url" value="https://repo.rosewoodmc.com/releases" />
     </remote-repository>
   </component>
 </project>

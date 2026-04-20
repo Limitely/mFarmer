@@ -21,19 +21,18 @@ public class BoostManager {
 
     public BoostManager(MFarmer plugin) {
         this.plugin = plugin;
-        loadBoostsFromDb();
         loadGlobalBoostFromDb();
     }
 
     public void setGlobalBoost(double multiplier, int minutes) {
         globalMultiplier = multiplier;
-        globalBoostEndTime = System.currentTimeMillis() + (minutes * 60_000L);
-        plugin.getDatabase().saveGlobalBoost(globalMultiplier, globalBoostEndTime);
-
-        String msg = plugin.getConfigCache().getMessage("boost_start_broadcast")
-                .replace("{multiplier}", String.valueOf(multiplier))
-                .replace("{minutes}", String.valueOf(minutes));
-        Bukkit.broadcastMessage(msg);
+        globalBoostEndTime = System.currentTimeMillis() + minutes * 60_000L;
+        plugin.getDatabase().saveGlobalBoost(multiplier, globalBoostEndTime);
+        Bukkit.broadcastMessage(
+                plugin.getConfigCache().getMessage("boost_start_broadcast")
+                        .replace("{multiplier}", String.valueOf(multiplier))
+                        .replace("{minutes}", String.valueOf(minutes))
+        );
     }
 
     public void stopGlobalBoost() {
@@ -43,27 +42,53 @@ public class BoostManager {
     }
 
     private void loadGlobalBoostFromDb() {
-        double[] data = plugin.getDatabase().loadGlobalBoost();
-        if (data != null) {
-            globalMultiplier = data[0];
-            globalBoostEndTime = (long) data[1];
-            long remaining = (globalBoostEndTime - System.currentTimeMillis()) / 1000;
-            plugin.getLogger().info("Восстановлен глобальный буст x" + globalMultiplier +
-                                    ", осталось " + formatTime(remaining));
-        }
+        Thread thread = new Thread(() -> {
+            double[] data = plugin.getDatabase().loadGlobalBoost();
+            if (data == null) return;
+            double mult = data[0];
+            long end = (long) data[1];
+            if (end > System.currentTimeMillis()) {
+                globalMultiplier = mult;
+                globalBoostEndTime = end;
+            } else {
+                globalMultiplier = 1.0;
+                globalBoostEndTime = 0;
+                plugin.getDatabase().saveGlobalBoost(1.0, 0);
+            }
+        }, "mFarmer-boost-load");
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    public void loadPlayerBoost(UUID uuid) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            double[] data = plugin.getDatabase().loadLocalBoost(uuid);
+            if (data == null) return;
+            double mult = data[0];
+            long end = (long) data[1];
+            if (end > System.currentTimeMillis()) {
+                localBoosts.put(uuid, new PersonalBoost(mult, end));
+            } else {
+                plugin.getDatabase().saveLocalBoost(uuid, 1.0, 0);
+            }
+        });
+    }
+
+    public void unloadPlayerBoost(UUID uuid) {
+        localBoosts.remove(uuid);
     }
 
     public void setLocalBoost(UUID uuid, double multiplier, int minutes) {
-        long endTime = System.currentTimeMillis() + (minutes * 60_000L);
-        localBoosts.put(uuid, new PersonalBoost(multiplier, endTime));
-        plugin.getDatabase().saveLocalBoost(uuid, multiplier, endTime);
-
+        long end = System.currentTimeMillis() + minutes * 60_000L;
+        localBoosts.put(uuid, new PersonalBoost(multiplier, end));
+        plugin.getDatabase().saveLocalBoost(uuid, multiplier, end);
         Player player = Bukkit.getPlayer(uuid);
         if (player != null) {
-            String msg = plugin.getConfigCache().getMessage("personal_boost_received")
-                    .replace("{multiplier}", String.valueOf(multiplier))
-                    .replace("{minutes}", String.valueOf(minutes));
-            player.sendMessage(msg);
+            player.sendMessage(
+                    plugin.getConfigCache().getMessage("personal_boost_received")
+                            .replace("{multiplier}", String.valueOf(multiplier))
+                            .replace("{minutes}", String.valueOf(minutes))
+            );
         }
     }
 
@@ -72,46 +97,39 @@ public class BoostManager {
         plugin.getDatabase().saveLocalBoost(uuid, 1.0, 0);
     }
 
-    private void loadBoostsFromDb() {
-        plugin.getDatabase().loadAllActiveBoosts().forEach((uuid, data) ->
-                localBoosts.put(uuid, new PersonalBoost(data[0], data[1].longValue())));
-    }
-
     public double getMultiplier(UUID uuid) {
         long now = System.currentTimeMillis();
-        double total = 1.0;
+        double result = 1.0;
 
         if (now < globalBoostEndTime) {
-            total *= globalMultiplier;
+            result *= globalMultiplier;
         }
 
-        PersonalBoost personal = localBoosts.get(uuid);
-        if (personal != null) {
-            if (now < personal.endTime()) {
-                total *= personal.multiplier();
+        PersonalBoost boost = localBoosts.get(uuid);
+        if (boost != null) {
+            if (now < boost.endTime()) {
+                result *= boost.multiplier();
             } else {
                 localBoosts.remove(uuid);
+                plugin.getDatabase().saveLocalBoost(uuid, 1.0, 0);
             }
         }
 
-        return total;
+        return result;
     }
 
     public String getGlobalRemainingTime() {
-        long seconds = (globalBoostEndTime - System.currentTimeMillis()) / 1000;
-        return seconds > 0 ? formatTime(seconds) : "00:00";
+        return format(globalBoostEndTime);
     }
 
     public String getLocalRemainingTime(UUID uuid) {
-        PersonalBoost personal = localBoosts.get(uuid);
-        if (personal == null) return "00:00";
-        long seconds = (personal.endTime() - System.currentTimeMillis()) / 1000;
-        return seconds > 0 ? formatTime(seconds) : "00:00";
+        PersonalBoost b = localBoosts.get(uuid);
+        if (b == null) return "00:00";
+        return format(b.endTime());
     }
 
-    private String formatTime(long seconds) {
-        long m = seconds / 60;
-        long s = seconds % 60;
-        return String.format("%02d:%02d", m, s);
+    private String format(long endTime) {
+        long sec = Math.max(0, (endTime - System.currentTimeMillis()) / 1000);
+        return String.format("%02d:%02d", sec / 60, sec % 60);
     }
 }

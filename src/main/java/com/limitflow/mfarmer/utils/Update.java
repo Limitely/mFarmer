@@ -1,11 +1,11 @@
 package com.limitflow.mfarmer.utils;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.limitflow.mfarmer.MFarmer;
 import org.bukkit.Bukkit;
-import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.ChatColor;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -14,9 +14,8 @@ public class Update {
 
     private static final String REPO = "Limitely/mFarmer";
     private static final String API_URL = "https://api.github.com/repos/" + REPO + "/releases/latest";
-    private static final String PREFIX = "\u001b[37m[\u001b[90mmFarmer\u001b[37m]\u001b[0m ";
+    private static final String PREFIX = ChatColor.GRAY + "[" + ChatColor.WHITE + "mFarmer" + ChatColor.GRAY + "] " + ChatColor.RESET;
 
-    private static final ConsoleCommandSender console = Bukkit.getConsoleSender();
     private final MFarmer plugin;
 
     public Update(MFarmer plugin) {
@@ -34,89 +33,57 @@ public class Update {
                 connection.setReadTimeout(5000);
 
                 if (connection.getResponseCode() != 200) {
-                    logError("апи успешно вернул код " + connection.getResponseCode() + ". Проверку пропустим.");
+                    logError("Не удалось связаться с GitHub. Код ответа: " + connection.getResponseCode());
                     return;
                 }
 
-                StringBuilder response = new StringBuilder();
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                    String line;
-                    while ((line = reader.readLine()) != null) response.append(line);
+                try (InputStreamReader reader = new InputStreamReader(connection.getInputStream())) {
+                    JsonObject json = new JsonParser().parse(reader).getAsJsonObject();
+                    String latestVersion = json.get("tag_name").getAsString();
+                    String downloadUrl = json.get("html_url").getAsString();
+                    String currentVersion = plugin.getDescription().getVersion();
+
+                    if (compareVersions(currentVersion, latestVersion) < 0) {
+                        printUpdateMessage(currentVersion, latestVersion, downloadUrl);
+                    } else {
+                        logInfo("Плагин актуален! Текущая версия: " + ChatColor.GREEN + currentVersion);
+                    }
                 }
-
-                String body = response.toString();
-                String latestVersion = extractJsonField(body, "tag_name");
-                String downloadUrl   = extractJsonField(body, "html_url");
-
-                if (latestVersion == null) {
-                    logError("Неудачно прочитана версия.");
-                    return;
-                }
-
-                String currentVersion = plugin.getDescription().getVersion();
-
-                if (compareVersions(currentVersion, latestVersion) < 0) {
-                    console.sendMessage(PREFIX);
-                    logWarning("Доступна новая версия плагина!");
-                    logWarning("Текущая: \u001b[90m" + currentVersion
-                            + "\u001b[33m  →  Новая: \u001b[32m" + latestVersion + "\u001b[0m");
-                    logWarning("Скачать:");
-                    console.sendMessage(PREFIX + "\u001b[36m" + downloadUrl + "\u001b[0m");
-                    console.sendMessage(PREFIX);
-                } else {
-                    logInfo("Плагин актуален! Молодец что следишь. Версия: \u001b[32m" + currentVersion + "\u001b[0m");
-                }
-
-            } catch (IOException e) {
-                logError("Ошибка с апи: " + e.getMessage());
             } catch (Exception e) {
-                logError("Ошибка при проверки обновления: " + e.getMessage());
+                logError("Ошибка при проверке обновлений: " + e.getMessage());
             }
         });
     }
 
-    private static String extractJsonField(String json, String field) {
-        String key = "\"" + field + "\"";
-        int keyIndex = json.indexOf(key);
-        if (keyIndex == -1) return null;
-
-        int colon = json.indexOf(":", keyIndex + key.length());
-        if (colon == -1) return null;
-
-        int valueStart = json.indexOf("\"", colon + 1);
-        if (valueStart == -1) return null;
-
-        int valueEnd = json.indexOf("\"", valueStart + 1);
-        if (valueEnd == -1) return null;
-
-        return json.substring(valueStart + 1, valueEnd);
-    }
-
-    private static int compareVersions(String v1, String v2) {
-        v1 = v1.replaceAll("^[vV]", "");
-        v2 = v2.replaceAll("^[vV]", "");
-
-        String[] parts1 = v1.split("\\.");
-        String[] parts2 = v2.split("\\.");
+    private int compareVersions(String v1, String v2) {
+        String[] parts1 = v1.replaceAll("[^0-9.]", "").split("\\.");
+        String[] parts2 = v2.replaceAll("[^0-9.]", "").split("\\.");
         int length = Math.max(parts1.length, parts2.length);
-
         for (int i = 0; i < length; i++) {
-            int p1 = i < parts1.length ? Integer.parseInt(parts1[i]) : 0;
-            int p2 = i < parts2.length ? Integer.parseInt(parts2[i]) : 0;
+            int p1 = i < parts1.length && !parts1[i].isEmpty() ? Integer.parseInt(parts1[i]) : 0;
+            int p2 = i < parts2.length && !parts2[i].isEmpty() ? Integer.parseInt(parts2[i]) : 0;
             if (p1 != p2) return Integer.compare(p1, p2);
         }
         return 0;
     }
 
-    private static void logInfo(String message) {
-        console.sendMessage(PREFIX + "\u001b[32m" + message + "\u001b[0m");
+    private void printUpdateMessage(String current, String latest, String url) {
+        Bukkit.getConsoleSender().sendMessage(PREFIX);
+        logWarning("Доступна новая версия плагина!");
+        logWarning("Текущая: " + ChatColor.GRAY + current + ChatColor.YELLOW + "  →  Новая: " + ChatColor.GREEN + latest);
+        logWarning("Скачать: " + ChatColor.AQUA + url);
+        Bukkit.getConsoleSender().sendMessage(PREFIX);
     }
 
-    private static void logWarning(String message) {
-        console.sendMessage(PREFIX + "\u001b[33m" + message + "\u001b[0m");
+    private void logInfo(String msg) {
+        Bukkit.getConsoleSender().sendMessage(PREFIX + ChatColor.GREEN + msg);
     }
 
-    private static void logError(String message) {
-        console.sendMessage(PREFIX + "\u001b[31m" + message + "\u001b[0m");
+    private void logWarning(String msg) {
+        Bukkit.getConsoleSender().sendMessage(PREFIX + ChatColor.YELLOW + msg);
+    }
+
+    private void logError(String msg) {
+        Bukkit.getConsoleSender().sendMessage(PREFIX + ChatColor.RED + msg);
     }
 }

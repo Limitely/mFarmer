@@ -8,6 +8,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 public class ConfigCache {
@@ -28,18 +30,29 @@ public class ConfigCache {
     private int upgradeSlotsPerLevel = 10;
     private int maxExtraCapacity = 0;
 
+    private String currencyProvider = "playerpoints";
+    private String currencySymbol = "₽";
+    private String currencyFormat = "#,##0.00";
+    private char decimalSeparator = ',';
+    private char groupingSeparator = ' ';
+
+    private double eventMultiplier = 2.0;
+    private int eventDurationMinutes = 30;
+    private List<String> eventScheduleTimes = new ArrayList<>();
+    private String eventWinnerCommands = "";
+
     public void load(@NotNull FileConfiguration config) {
         groups.clear();
         crops.clear();
 
         ConfigurationSection groupsSection = config.getConfigurationSection("groups");
         if (groupsSection != null) {
-            groupsSection.getKeys(false).forEach(key -> {
+            for (String key : groupsSection.getKeys(false)) {
                 String perm = config.getString("groups." + key + ".permission", "");
                 double price = config.getDouble("groups." + key + ".price", 1.0);
                 int capacity = config.getInt("groups." + key + ".capacity", 64);
                 groups.put(key, new GroupData(perm, price, capacity));
-            });
+            }
         }
 
         restoreDelay = config.getLong("settings.restoreDelay", 20L);
@@ -59,6 +72,19 @@ public class ConfigCache {
         upgradeCostPerSlot   = config.getDouble("upgrade.costPerSlot", 10.0);
         upgradeSlotsPerLevel = config.getInt("upgrade.slotsPerLevel", 10);
         maxExtraCapacity     = config.getInt("upgrade.maxExtraCapacity", 0);
+
+        currencyProvider  = config.getString("currency.provider", "playerpoints").toLowerCase();
+        currencySymbol    = config.getString("currency.symbol", "₽");
+        currencyFormat    = config.getString("currency.format", "#,##0.00");
+        String dec = config.getString("currency.decimalSeparator", ",");
+        String grp = config.getString("currency.groupingSeparator", " ");
+        decimalSeparator  = dec.isEmpty() ? ',' : dec.charAt(0);
+        groupingSeparator = grp.isEmpty() ? ' ' : grp.charAt(0);
+
+        eventMultiplier       = config.getDouble("event.multiplier", 2.0);
+        eventDurationMinutes  = config.getInt("event.duration-minutes", 30);
+        eventScheduleTimes    = config.getStringList("event.schedule");
+        eventWinnerCommands   = config.getString("event.winner-commands", "");
 
         ConfigurationSection cropsSection = config.getConfigurationSection("crops");
         if (cropsSection != null) {
@@ -95,15 +121,21 @@ public class ConfigCache {
         }
     }
 
+    public String formatMoney(double value) {
+        try {
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+            symbols.setDecimalSeparator(decimalSeparator);
+            symbols.setGroupingSeparator(groupingSeparator);
+            DecimalFormat fmt = new DecimalFormat(currencyFormat, symbols);
+            return fmt.format(value);
+        } catch (Exception e) {
+            return String.format("%.2f", value);
+        }
+    }
+
     @Nullable
-    public CropConfig getCropConfig(Material material) {
-        return crops.get(material);
-    }
-
-    public Map<Material, CropConfig> getCrops() {
-        return Collections.unmodifiableMap(crops);
-    }
-
+    public CropConfig getCropConfig(Material material) { return crops.get(material); }
+    public Map<Material, CropConfig> getCrops() { return Collections.unmodifiableMap(crops); }
     public Map<String, GroupData> getGroups() { return groups; }
     public long getRestoreDelay() { return restoreDelay; }
     public List<String> getRegions() { return regions; }
@@ -114,6 +146,12 @@ public class ConfigCache {
     public double getUpgradeCostPerSlot() { return upgradeCostPerSlot; }
     public int getUpgradeSlotsPerLevel() { return upgradeSlotsPerLevel; }
     public int getMaxExtraCapacity() { return maxExtraCapacity; }
+    public String getCurrencySymbol() { return currencySymbol; }
+    public String getCurrencyProvider() { return currencyProvider; }
+    public double getEventMultiplier() { return eventMultiplier; }
+    public int getEventDurationMinutes() { return eventDurationMinutes; }
+    public List<String> getEventScheduleTimes() { return eventScheduleTimes; }
+    public String getEventWinnerCommands()      { return eventWinnerCommands; }
 
     public List<String> getMessageList(String key) {
         return messageLists.getOrDefault(key, new ArrayList<>());

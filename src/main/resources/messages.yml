@@ -4,16 +4,22 @@ messages:
   collect: "&#74E38E&lФЕРМА &8| &fСобрано ({crop}): &#74E38E{amount}&7/&#74E38E{capacity}"
   backpack_full: "&#E37474&lОШИБКА &8| &cРюкзак полон! Используйте &f/mfarmer salary"
 
-  salary_success: "&#74E38E&lУСПЕХ &8| &fВы сдали урожай и получили &#74E38E{money}$"
+  salary_success: "&#74E38E&lУСПЕХ &8| &fВы сдали урожай и получили &#74E38E{money}"
   salary_fail: "&#E37474&lОШИБКА &8| &cУ вас нет урожая в рюкзаке!"
 
   upgrade_success: "&#74E38E&lАПГРЕЙД &8| &fВместимость увеличена! Текущий бонус: &#74E38E+{bonus}"
-  upgrade_no_money: "&#E37474&lДЕНЬГИ &8| &cНедостаточно средств! Нужно: &#74E38E{price}$"
+  upgrade_no_money: "&#E37474&lДЕНЬГИ &8| &cНедостаточно средств! Нужно: &#74E38E{price}"
   upgrade_max_reached: "&#E37474&lАПГРЕЙД &8| &cВы уже достигли максимального размера рюкзака!"
 
   boost_start_broadcast: "&#D674E3&lБУСТ &8| &fАктивирован глобальный множитель &#D674E3x{multiplier} &fна &e{minutes} мин.!"
   personal_boost_received: "&#D674E3&lБУСТ &8| &fВам активирован личный множитель &#D674E3x{multiplier} &fна &e{minutes} мин.!"
   boost_active_msg: "&#D674E3&lБУСТ &8| &fВ данный момент действует множитель: &#D674E3x{multiplier}"
+
+  event_start_broadcast: "&#FF6B6B&lИВЕНТ &8| &fИгрок &e{starter} &fзапустил ферм-ивент! Множитель: &#FF6B6Bx{multiplier} &fна &e{minutes} мин.!"
+  event_end_broadcast: "&#FF6B6B&lИВЕНТ &8| &fФерм-ивент завершён! Спасибо за участие."
+  event_already_active: "&#E37474&lОШИБКА &8| &cИвент уже активен!"
+  event_winner_broadcast: "&#FFD700&lПОБЕДИТЕЛЬ &8| &fСамый крутой раб: &e{player} &8— &a{amount} &fед. урожая!"
+  event_collect_suffix: " &d[x{multiplier} ИВЕНТ]"
 
   help_player:
     - "&d&lФермер &7- Помощь"
@@ -25,6 +31,7 @@ messages:
     - "&c/mfarmer giveboost <игрок> <x> <мин> &7- Личный буст"
     - "&c/mfarmer stopboost [игрок] &7- Остановить буст"
     - "&c/mfarmer adminboost <x> <мин> &7- Глобальный буст"
+    - "&c/mfarmer event start|stop &7- Управление ивентом"
     - "&c/mfarmer reload &7- Перезагрузка"
 
   top_loading: "&#74E38EЗагрузка..."

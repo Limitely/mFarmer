@@ -41,7 +41,7 @@ menus:
   stats:
     title: "&#74E38E&lСтатистика"
     size: 27
-    command: "farmer"
+    command: "farmermenu"
 
     items:
 

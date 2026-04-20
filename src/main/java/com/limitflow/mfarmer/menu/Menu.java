@@ -2,7 +2,7 @@ package com.limitflow.mfarmer.menu;
 
 import com.limitflow.mfarmer.MFarmer;
 import com.limitflow.mfarmer.command.MenuCommand;
-import me.clip.placeholderapi.PlaceholderAPI;
+import com.limitflow.mfarmer.utils.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.SimpleCommandMap;
@@ -26,21 +26,20 @@ public class Menu {
     private final Map<String, Map<Integer, String>> menuActions = new HashMap<>();
     private final Map<String, String> menuTitles = new HashMap<>();
     private final Map<String, Integer> menuSizes = new HashMap<>();
-
     private final List<String> registeredCommands = new ArrayList<>();
 
     private String defaultMenuId = "stats";
+    private boolean placeholderApiEnabled = false;
 
     public Menu(MFarmer plugin) {
         this.plugin = plugin;
+        placeholderApiEnabled = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
         loadConfig();
     }
 
     public void loadConfig() {
         File file = new File(plugin.getDataFolder(), "menu.yml");
-        if (!file.exists()) {
-            plugin.saveResource("menu.yml", false);
-        }
+        if (!file.exists()) plugin.saveResource("menu.yml", false);
         config = YamlConfiguration.loadConfiguration(file);
 
         menuActions.clear();
@@ -58,7 +57,7 @@ public class Menu {
             var sec = menusSection.getConfigurationSection(menuId);
             if (sec == null) continue;
 
-            String title = com.limitflow.mfarmer.utils.Message.color(sec.getString("title", "Меню"));
+            String title = Message.color(sec.getString("title", "Меню"));
             int size = sec.getInt("size", 27);
 
             menuTitles.put(menuId, title);
@@ -90,7 +89,6 @@ public class Menu {
 
             commandMap.register(plugin.getName().toLowerCase(), new MenuCommand(plugin, commandName, menuId));
             registeredCommands.add(commandName);
-
         } catch (Exception e) {
             plugin.getLogger().warning("Не удалось зарегистрировать команду /" + commandName + ": " + e.getMessage());
         }
@@ -102,7 +100,7 @@ public class Menu {
 
     public void openMenu(Player player, String menuId) {
         if (!menuTitles.containsKey(menuId)) {
-            player.sendMessage(com.limitflow.mfarmer.utils.Message.color("&cМеню &e" + menuId + " &cне найдено."));
+            player.sendMessage(Message.color("&cМеню &e" + menuId + " &cне найдено."));
             return;
         }
 
@@ -114,22 +112,13 @@ public class Menu {
         actions.clear();
 
         var menusSection = config.getConfigurationSection("menus");
-        if (menusSection == null) {
-            player.openInventory(inv);
-            return;
-        }
+        if (menusSection == null) { player.openInventory(inv); return; }
 
         var menuSection = menusSection.getConfigurationSection(menuId);
-        if (menuSection == null) {
-            player.openInventory(inv);
-            return;
-        }
+        if (menuSection == null) { player.openInventory(inv); return; }
 
         var items = menuSection.getConfigurationSection("items");
-        if (items == null) {
-            player.openInventory(inv);
-            return;
-        }
+        if (items == null) { player.openInventory(inv); return; }
 
         for (String key : items.getKeys(false)) {
             var itemSec = items.getConfigurationSection(key);
@@ -138,44 +127,39 @@ public class Menu {
             int slot = itemSec.getInt("slot");
             String materialStr = itemSec.getString("material", "STONE");
             String name = itemSec.getString("name", "");
-            var lore = itemSec.getStringList("lore");
+            List<String> lore = itemSec.getStringList("lore");
             String action = itemSec.getString("action");
 
-            ItemStack item = buildItem(player, materialStr, name, lore);
-            inv.setItem(slot, item);
-
+            inv.setItem(slot, buildItem(player, materialStr, name, lore));
             if (action != null) actions.put(slot, action);
         }
 
         player.openInventory(inv);
     }
 
-    private ItemStack buildItem(Player player, String materialStr, String name, java.util.List<String> lore) {
+    private ItemStack buildItem(Player player, String materialStr, String name, List<String> lore) {
+        List<String> resolvedLore = lore.stream().map(l -> apply(player, l)).toList();
+        String resolvedName = apply(player, name);
+
         if (materialStr.startsWith("HEAD:")) {
-            String texture = materialStr.substring(5).trim();
             return new ItemBuilder(Material.PLAYER_HEAD)
-                    .name(apply(player, name))
-                    .lore(lore.stream().map(l -> apply(player, l)).toList())
-                    .customHead(texture)
+                    .name(resolvedName).lore(resolvedLore)
+                    .customHead(materialStr.substring(5).trim())
                     .build();
         }
         if (materialStr.equalsIgnoreCase("PLAYER_HEAD")) {
             return new ItemBuilder(Material.PLAYER_HEAD)
-                    .name(apply(player, name))
-                    .lore(lore.stream().map(l -> apply(player, l)).toList())
+                    .name(resolvedName).lore(resolvedLore)
                     .playerHead(player)
                     .build();
         }
         Material material;
         try {
-            material = Material.valueOf(materialStr);
-        } catch (Exception e) {
+            material = Material.valueOf(materialStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
             material = Material.STONE;
         }
-        return new ItemBuilder(material)
-                .name(apply(player, name))
-                .lore(lore.stream().map(l -> apply(player, l)).toList())
-                .build();
+        return new ItemBuilder(material).name(resolvedName).lore(resolvedLore).build();
     }
 
     public String getAction(String menuId, int slot) {
@@ -186,7 +170,7 @@ public class Menu {
     public String getDefaultMenuId() { return defaultMenuId; }
 
     private void loadLegacy() {
-        String title = com.limitflow.mfarmer.utils.Message.color(config.getString("menu.title", "Статистика"));
+        String title = Message.color(config.getString("menu.title", "Статистика"));
         int size = config.getInt("menu.size", 27);
         menuTitles.put("stats", title);
         menuSizes.put("stats", size);
@@ -195,6 +179,10 @@ public class Menu {
     }
 
     private String apply(Player player, String text) {
-        return com.limitflow.mfarmer.utils.Message.color(PlaceholderAPI.setPlaceholders(player, text));
+        String colored = Message.color(text);
+        if (placeholderApiEnabled) {
+            return me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, colored);
+        }
+        return colored;
     }
 }

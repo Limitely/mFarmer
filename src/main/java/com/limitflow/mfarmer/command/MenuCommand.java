@@ -19,9 +19,6 @@ public class MenuCommand extends Command {
 
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
-        if (args.length > 0) {
-            return new FarmerCommand(plugin).onCommand(sender, this, label, args);
-        }
         if (!(sender instanceof Player player)) return true;
         plugin.getMenu().openMenu(player, menuId);
         return true;

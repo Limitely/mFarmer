@@ -1,3 +1,12 @@
+database:
+  type: sqlite
+  # настройки MySQL при type: mysql
+  host: localhost
+  port: 3306
+  name: mfarmer
+  user: root
+  password: ""
+
 settings:
   # регионы (можно указать несколько)
   regions:
@@ -9,6 +18,19 @@ settings:
     type: "ENTITY_ITEM_PICKUP"
     volume: 1.0
     pitch: 1.2
+
+# настройка валюты
+# provider: vault или playerpoints
+# symbol — символ валюты рядом с суммой
+# format — формат числа
+# decimalSeparator — разделитель дробной части (, для рублей)
+# groupingSeparator — разделитель тысяч (пробел для рублей)
+currency:
+  provider: "playerpoints"
+  symbol: "₽"
+  format: "#,##0.00"
+  decimalSeparator: ","
+  groupingSeparator: " "
 
 # настройка групп, цена умножается на priceMultiplier из категории crops
 groups:
@@ -54,3 +76,16 @@ upgrade:
   slotsPerLevel: 10
   # максимум дополнительных слотов (0 = без ограничения)
   maxExtraCapacity: 0
+
+# настройки фарм-ивента
+# multiplier — множитель зарплаты во время ивента
+# duration-minutes — длительность в минутах
+# schedule — автозапуск по времени (HH:mm), оставьте пустым для ручного запуска
+# winner-commands — команды победителю через ({player}, {amount})
+event:
+  multiplier: 2.0
+  duration-minutes: 30
+  schedule:
+    - "12:00"
+    - "20:00"
+  winner-commands: "money give {player} 1"

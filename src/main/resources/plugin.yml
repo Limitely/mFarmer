@@ -1,23 +1,20 @@
 name: mFarmer
-version: '1.3.4'
+version: '1.3.5'
 main: com.limitflow.mfarmer.MFarmer
-api-version: '1.16'
-depend: [WorldGuard, Vault]
-softdepend: [PlaceholderAPI]
+api-version: '1.21'
+softdepend: [WorldGuard, PlaceholderAPI, Vault, PlayerPoints]
 author: Limitely
 
 commands:
   mfarmer:
-    usage: /mfarmer <help|salary|upgrade|top|reload|adminboost|giveboost|menu [id]>
     aliases: [farmer, farm]
 
 permissions:
   mfarmer.use:
-    description: "Для игроков, чтобы была доступна /farmer salary"
     default: true
   mfarmer.reload:
-    description: "Право для перезагрузки конфига"
     default: op
   mfarmer.admin:
-    description: "Право для админов"
+    default: op
+  mfarmer.event:
     default: op

@@ -53,28 +53,22 @@ public class ItemBuilder {
 
     public ItemBuilder customHead(String textureValue) {
         if (!(meta instanceof SkullMeta skullMeta)) return this;
-
         try {
             String base64;
-
             if (textureValue.startsWith("http://") || textureValue.startsWith("https://")) {
                 String json = "{\"textures\":{\"SKIN\":{\"url\":\"" + textureValue + "\"}}}";
                 base64 = Base64.getEncoder().encodeToString(json.getBytes());
             } else {
                 base64 = textureValue;
             }
-
             GameProfile profile = new GameProfile(UUID.randomUUID(), null);
             profile.getProperties().put("textures", new Property("textures", base64));
-
             Field profileField = skullMeta.getClass().getDeclaredField("profile");
             profileField.setAccessible(true);
             profileField.set(skullMeta, profile);
-
         } catch (Exception e) {
             java.util.logging.Logger.getLogger("mFarmer").warning("Неудачно применилась текстура " + e.getMessage());
         }
-
         return this;
     }
 
